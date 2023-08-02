@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+// import "/api-proto/v1/book.proto";
+
+option go_package = "grpc-flutter/backend/generated/grpc;grpc";
+
+message Usuario {
+  repeated Book books = 1;
+  int32 id = 2;
+  string name = 3;
+  string lastname = 4;
+  string email = 5;
+  string password = 6;
+}
+
+message Book {
+  int32 id = 1;
+  string author = 2;
+  string cover_url = 3;
+}
+
+service BookService {
+  rpc GetAllBooks(GetAllBooksParams) returns (stream Book);
+  rpc GetBook(GetBookParams) returns (Book);
+  rpc SearchBooks(SearchBooksParams) returns (stream Book);
+}
+
+message GetAllBooksParams {
+
+}
+
+message GetBookParams {
+  int32 id = 1;
+}
+
+message SearchBooksParams {
+  int32 id = 1;
+  string author = 2;
+}
+
+service UsuarioService {
+  rpc Login(LoginParams) returns (Usuario);
+}
+
+message LoginParams {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
