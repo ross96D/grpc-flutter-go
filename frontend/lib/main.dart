@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/generated/protos/usuario.pbgrpc.dart';
+import 'package:frontend/src/generated/book.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 
 void main() {
@@ -50,7 +50,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   late ClientChannel _channel;
   late BookServiceClient _stub;
   List<Book>? _books;
@@ -61,17 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _stub = BookServiceClient(_channel);
 
     super.initState();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
   }
   
   _getBooks() async {
@@ -122,17 +110,15 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
             if (_books != null) 
               for (final book in _books!)
               Column(
                 children: [
                   Text(book.id.toString()),
-                  Text(book.author),
+                  Text(book.author.id.toString()),
                   Text(book.coverUrl),
+                  Text(book.title),
+                  Text(book.description),
                 ],
               )
             else
