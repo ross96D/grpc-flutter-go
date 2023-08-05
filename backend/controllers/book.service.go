@@ -43,7 +43,6 @@ func (BookServiceServer) GetAllBooks(params *p.GetAllBooksParams, w p.BookServic
 			return nil
 		}
 		price = float32(utils.RoundTo(float64(price), 2))
-		println(id, author_id, price, cover_url, date_out.String(), title)
 		w.Send(&p.Book{
 			Id: id,
 			Author: &p.Author{
