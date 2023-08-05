@@ -7,7 +7,11 @@ import (
 	"os"
 )
 
-var DB *sql.DB
+var _db *sql.DB
+
+func DB() *sql.DB {
+	return _db
+}
 
 // This functions exit program on fail
 func Connect() {
@@ -19,7 +23,7 @@ func Connect() {
 		fmt.Println("Connection to database failed", err)
 		os.Exit(1)
 	}
-	DB = db
+	_db = db
 }
 
 type BeginTxParams struct {
@@ -34,5 +38,5 @@ func BeginTx(params BeginTxParams) (*sql.Tx, error) {
 			ReadOnly:  true,
 		}
 	}
-	return DB.BeginTx(params.Ctx, params.Opts)
+	return _db.BeginTx(params.Ctx, params.Opts)
 }

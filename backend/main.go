@@ -15,7 +15,7 @@ import (
 
 func main() {
 	db.Connect()
-	defer db.DB.Close()
+	defer db.DB().Close()
 
 	port := 8080
 	listen, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
