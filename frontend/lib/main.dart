@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/statics.dart';
 import 'package:frontend/src/generated/book.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 
@@ -50,15 +51,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late ClientChannel _channel;
   late BookServiceClient _stub;
   List<Book>? _books;
 
   @override
   void initState() {
-    _channel = ClientChannel('localhost', port: 8080, options: const ChannelOptions(credentials: ChannelCredentials.insecure()));
-    _stub = BookServiceClient(_channel);
-
+    _stub = BookServiceClient(
+      Connection.channel,
+      options: CallOptions(
+        metadata: {
+          "authorization": Values.token?.token ?? "auth-token",
+        })
+    );
     super.initState();
   }
   
