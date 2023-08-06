@@ -39,6 +39,7 @@ func main() {
 	}
 	server := grpc.NewServer(opts...)
 	p.RegisterBookServiceServer(server, c.BookServiceServer{})
+	p.RegisterUserServiceServer(server, c.UserServiceServer{})
 
 	fmt.Println("gRPC server listen on port:", port)
 	if er := server.Serve(listen); er != nil {
