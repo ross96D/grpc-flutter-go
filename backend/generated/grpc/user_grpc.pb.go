@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.6.1
-// source: usuario.proto
+// source: user.proto
 
 package grpc
 
@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_Login_FullMethodName = "/UserService/Login"
+	UserService_Login_FullMethodName    = "/UserService/Login"
+	UserService_Register_FullMethodName = "/UserService/Register"
 )
 
 // UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	Login(ctx context.Context, in *LoginParams, opts ...grpc.CallOption) (*User, error)
+	Login(ctx context.Context, in *LoginParams, opts ...grpc.CallOption) (*Token, error)
+	Register(ctx context.Context, in *User, opts ...grpc.CallOption) (*RegisterResult, error)
 }
 
 type userServiceClient struct {
@@ -37,9 +39,18 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) Login(ctx context.Context, in *LoginParams, opts ...grpc.CallOption) (*User, error) {
-	out := new(User)
+func (c *userServiceClient) Login(ctx context.Context, in *LoginParams, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
 	err := c.cc.Invoke(ctx, UserService_Login_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Register(ctx context.Context, in *User, opts ...grpc.CallOption) (*RegisterResult, error) {
+	out := new(RegisterResult)
+	err := c.cc.Invoke(ctx, UserService_Register_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +61,8 @@ func (c *userServiceClient) Login(ctx context.Context, in *LoginParams, opts ...
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	Login(context.Context, *LoginParams) (*User, error)
+	Login(context.Context, *LoginParams) (*Token, error)
+	Register(context.Context, *User) (*RegisterResult, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -58,8 +70,11 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) Login(context.Context, *LoginParams) (*User, error) {
+func (UnimplementedUserServiceServer) Login(context.Context, *LoginParams) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedUserServiceServer) Register(context.Context, *User) (*RegisterResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -92,6 +107,24 @@ func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Register(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -103,7 +136,11 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Login",
 			Handler:    _UserService_Login_Handler,
 		},
+		{
+			MethodName: "Register",
+			Handler:    _UserService_Register_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "usuario.proto",
+	Metadata: "user.proto",
 }

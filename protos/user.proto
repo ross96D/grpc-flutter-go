@@ -14,11 +14,20 @@ message User {
 }
 
 service UserService {
-  rpc Login(LoginParams) returns (User);
+  rpc Login(LoginParams) returns (Token);
+  rpc Register(User) returns (RegisterResult);
 }
 
 message LoginParams {
   string username = 1;
   string email = 2;
   string password = 3;
+}
+
+message Token {
+  string token = 1;
+}
+
+message RegisterResult {
+  bool result = 1;
 }
