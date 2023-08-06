@@ -29,3 +29,19 @@ func (s UserServiceServer) Login(ctx context.Context, params *p.LoginParams) (*p
 		return nil, errors.New("Authentication Error")
 	}
 }
+
+func (s UserServiceServer) Register(ctx context.Context, params *p.User) (*p.RegisterResult, error) {
+	tx, err := db.BeginTx(db.BeginTxParams{Ctx: ctx})
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil, err
+	}
+	query := "INSERT INTO public.\"user\"(name, lastname, email, password) " +
+		"VALUES (?, ?, ?, ?)"
+	_, err = tx.Exec(query, params.Name, params.Lastname, params.Email, params.Password)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil, err
+	}
+	return &p.RegisterResult{Result: true}, nil
+}
