@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	db "grpc-flutter/backend/database"
@@ -31,16 +32,21 @@ func (s UserServiceServer) Login(ctx context.Context, params *p.LoginParams) (*p
 }
 
 func (s UserServiceServer) Register(ctx context.Context, params *p.User) (*p.RegisterResult, error) {
-	tx, err := db.BeginTx(db.BeginTxParams{Ctx: ctx})
+	tx, err := db.BeginTx(db.BeginTxParams{Ctx: ctx, Opts: &sql.TxOptions{ReadOnly: false}})
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Error Begining Transaction:", err)
 		return nil, err
 	}
-	query := "INSERT INTO public.\"user\"(name, lastname, email, password) " +
-		"VALUES (?, ?, ?, ?)"
+	query := "INSERT INTO public.user(name, lastname, email, password) " +
+		"VALUES ($1, $2, $3, $4)"
+
 	_, err = tx.Exec(query, params.Name, params.Lastname, params.Email, params.Password)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Error Querying:", err.Error())
+		return nil, err
+	}
+	if err = tx.Commit(); err != nil {
+		fmt.Println("Error Commiting:", err.Error())
 		return nil, err
 	}
 	return &p.RegisterResult{Result: true}, nil
