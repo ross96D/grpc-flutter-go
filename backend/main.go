@@ -33,9 +33,9 @@ func main() {
 		fmt.Println("failed to listen:", err)
 		return
 	}
-
 	opts := []grpc.ServerOption{
-		grpc.UnaryInterceptor(ensureValidToken),
+		grpc.UnaryInterceptor(ensureValidTokenUnary),
+		grpc.StreamInterceptor(ensureValidTokenStream),
 	}
 	server := grpc.NewServer(opts...)
 	p.RegisterBookServiceServer(server, c.BookServiceServer{})
@@ -46,8 +46,7 @@ func main() {
 	}
 }
 
-func ensureValidToken(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	fmt.Println(info.FullMethod, info.Server)
+func ensureValidTokenUnary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	if strings.Contains(info.FullMethod, "Login") {
 		return handler(ctx, req)
 	}
@@ -63,6 +62,25 @@ func ensureValidToken(ctx context.Context, req interface{}, info *grpc.UnaryServ
 	}
 	// Continue execution of handler after ensuring a valid token.
 	return handler(ctx, req)
+}
+
+func ensureValidTokenStream(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	if strings.Contains(info.FullMethod, "Login") {
+		return handler(srv, ss)
+	}
+
+	md, ok := metadata.FromIncomingContext(ss.Context())
+	if !ok {
+		return errMissingMetadata
+	}
+	// The keys within metadata.MD are normalized to lowercase.
+	// See: https://godoc.org/google.golang.org/grpc/metadata#New
+	if !valid(md["authorization"]) {
+		println("unauthorized")
+		return errInvalidToken
+	}
+	// Continue execution of handler after ensuring a valid token.
+	return handler(srv, ss)
 }
 
 func valid(authorization []string) bool {
