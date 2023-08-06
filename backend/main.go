@@ -47,7 +47,11 @@ func main() {
 }
 
 func ensureValidTokenUnary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	fmt.Println("RPC CALL:", info.FullMethod)
 	if strings.Contains(info.FullMethod, "Login") {
+		return handler(ctx, req)
+	}
+	if strings.Contains(info.FullMethod, "Register") {
 		return handler(ctx, req)
 	}
 
@@ -65,7 +69,11 @@ func ensureValidTokenUnary(ctx context.Context, req interface{}, info *grpc.Unar
 }
 
 func ensureValidTokenStream(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	fmt.Println("RPC CALL:", info.FullMethod)
 	if strings.Contains(info.FullMethod, "Login") {
+		return handler(srv, ss)
+	}
+	if strings.Contains(info.FullMethod, "Register") {
 		return handler(srv, ss)
 	}
 
