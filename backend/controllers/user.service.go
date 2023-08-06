@@ -13,7 +13,7 @@ type UserServiceServer struct {
 	p.UnimplementedUserServiceServer
 }
 
-func (s UserServiceServer) Login(ctx context.Context, params *p.LoginParams) (*p.User, error) {
+func (s UserServiceServer) Login(ctx context.Context, params *p.LoginParams) (*p.Token, error) {
 	query := "SELECT password FROM user WHERE email = ?"
 	rows, err := db.DB().QueryContext(ctx, query, params.Email)
 	if err != nil {
@@ -21,10 +21,10 @@ func (s UserServiceServer) Login(ctx context.Context, params *p.LoginParams) (*p
 		return nil, errors.New("Authentication Error")
 	}
 	hashed := utils.Hash(params.Password)
-	var user p.User
-	rows.Scan(user.Id, user.Name, user.Lastname, user.Email, user.Password)
-	if user.Password == hashed {
-		return &user, nil
+	var password string
+	rows.Scan(password)
+	if password == hashed {
+		return &p.Token{Token: "auth-token"}, nil
 	} else {
 		return nil, errors.New("Authentication Error")
 	}
