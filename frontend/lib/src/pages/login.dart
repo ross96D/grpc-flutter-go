@@ -3,6 +3,7 @@ import 'package:frontend/src/pages/home.dart';
 import 'package:frontend/src/pages/register.dart';
 import 'package:frontend/src/statics.dart';
 import 'package:frontend/src/generated/user.pbgrpc.dart';
+import 'package:frontend/src/utils/animations.dart';
 import 'package:frontend/src/utils/colors.dart';
 
 final passwordFocusNode = FocusNode();
@@ -120,14 +121,20 @@ class _PageAuthState extends State<PageAuth> {
     Values.token = await _stub.login(LoginParams(email: email, password: password));
     if (mounted) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const HomePage())
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
+          transitionsBuilder: Transitions.transition
+        )
       );
     }
   }
 
   void register() async {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const PageRegister())
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => const PageRegister(),
+        transitionsBuilder: Transitions.transition,
+      )
     );
   }
 }
