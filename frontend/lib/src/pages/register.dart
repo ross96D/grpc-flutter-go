@@ -31,7 +31,7 @@ class _PageRegisterState extends State<PageRegister> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Register'),
+          title: const Center(child: Text('Register')),
         ),
         backgroundColor: scaffoldBackground,
         body: Stack(
