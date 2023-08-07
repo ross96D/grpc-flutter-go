@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/generated/user.pbgrpc.dart';
+import 'package:frontend/src/pages/auth.dart';
 import 'package:frontend/src/statics.dart';
 import 'package:frontend/src/utils/colors.dart';
 
@@ -169,8 +170,6 @@ class _PageRegisterState extends State<PageRegister> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter some text';
                             } else if (value != user.password) {
-                              print(value);
-                              print(user.password);
                               return 'Passwords dont match';
                             }
                             return null;
@@ -198,17 +197,18 @@ class _PageRegisterState extends State<PageRegister> {
   }
   
   void register() async {
-    print('AAAAAAA');
     try {
-      print(user.toString());
       RegisterResult result = await _stub.register(user);
-      print('BBBBBBB');
-
-    if (result.result) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User registered sucessfully')));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User could not be registered')));
-    }
+      if (mounted) {
+        if (result.result) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('User registered sucessfully')));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const PageAuth()));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('User could not be registered')));
+        }
+      }
     } catch (e, st) {
       print(e);
       print(st);
