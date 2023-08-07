@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/pages/home.dart';
 import 'package:frontend/src/pages/register.dart';
 import 'package:frontend/src/statics.dart';
 import 'package:frontend/src/generated/user.pbgrpc.dart';
@@ -117,6 +118,11 @@ class _PageAuthState extends State<PageAuth> {
 
   void login() async {
     Values.token = await _stub.login(LoginParams(email: email, password: password));
+    if (mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const HomePage())
+      );
+    }
   }
 
   void register() async {
