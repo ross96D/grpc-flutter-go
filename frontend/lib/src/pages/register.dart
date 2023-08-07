@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/generated/user.pbgrpc.dart';
-import 'package:frontend/src/pages/auth.dart';
+import 'package:frontend/src/pages/login.dart';
 import 'package:frontend/src/statics.dart';
 import 'package:frontend/src/utils/colors.dart';
 
