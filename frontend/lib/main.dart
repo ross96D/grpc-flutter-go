@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Connection.channel,
       options: CallOptions(
         metadata: {
-          "authorization": Values.token?.token ?? "auth-token",
+          "authorization": Authorization.token?.token ?? "auth-token",
         })
     );
     super.initState();

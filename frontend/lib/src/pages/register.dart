@@ -26,20 +26,20 @@ class _PageRegisterState extends State<PageRegister> {
   @override
   Widget build(BuildContext context) {
     const textStyle = TextStyle(
-      color: foregroundColor,
+      color: MColor.foregroundColor,
     );
 
     return Scaffold(
         appBar: AppBar(
           title: const Center(child: Text('Register')),
         ),
-        backgroundColor: scaffoldBackground,
+        backgroundColor: MColor.scaffoldBackground,
         body: Stack(
           children: [
             Center(
               child: Container(
                 width: 500,
-                color: textBackgroundColor,
+                color: MColor.textBackgroundColor,
                 child: Form(
                   key: _formKey,
                   child: Column(

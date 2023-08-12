@@ -11,6 +11,9 @@ abstract class Connection {
   );
 }
 
-abstract class Values {
+abstract class Authorization {
   static Token? token;
+  static MapEntry<String, String> get getAuth {
+    return MapEntry('authorization', 'Bearer ${token!.token}');
+  }
 }

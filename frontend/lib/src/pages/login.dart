@@ -29,7 +29,7 @@ class _PageAuthState extends State<PageAuth> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: scaffoldBackground,
+        backgroundColor: MColor.scaffoldBackground,
         body: Stack(
           children: [
             Positioned(
@@ -37,10 +37,10 @@ class _PageAuthState extends State<PageAuth> {
               right: 5.0,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>((states) => textBackgroundColor)
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>((states) => MColor.textBackgroundColor)
                 ),
                 onPressed: register,
-                child: const Text("Registrarte", style: TextStyle(color: foregroundColor)),
+                child: const Text("Registrarte", style: TextStyle(color: MColor.foregroundColor)),
               ),
             ),
             Center(
@@ -57,11 +57,11 @@ class _PageAuthState extends State<PageAuth> {
                         keyboardType: TextInputType.emailAddress,
                         onChanged: (value) => setState(() => email = value),
                         style: const TextStyle(
-                          color: foregroundColor
+                          color: MColor.foregroundColor
                         ),
                         decoration: const InputDecoration(
                           labelStyle: TextStyle(
-                            color: foregroundColor
+                            color: MColor.foregroundColor
                           ),
                           labelText: "Email",
                           contentPadding: EdgeInsets.only(
@@ -91,11 +91,11 @@ class _PageAuthState extends State<PageAuth> {
                               });
                             },
                             style: const TextStyle(
-                              color: foregroundColor
+                              color: MColor.foregroundColor
                             ),
                             decoration: const InputDecoration(
                               labelStyle: TextStyle(
-                                color: foregroundColor
+                                color: MColor.foregroundColor
                               ),
                               labelText: "Contraseña",
                               contentPadding: EdgeInsets.only(right: 40, left: 0, bottom: 8, top: 12),
@@ -118,7 +118,7 @@ class _PageAuthState extends State<PageAuth> {
   }
 
   void login() async {
-    Values.token = await _stub.login(LoginParams(email: email, password: password));
+    Authorization.token = await _stub.login(LoginParams(email: email, password: password));
     if (mounted) {
       Navigator.of(context).push(
         PageRouteBuilder(
