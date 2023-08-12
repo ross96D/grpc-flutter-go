@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"net"
+	"net/http"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -17,6 +19,8 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
+
+var staticFs embed.FS
 
 var (
 	errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
@@ -41,14 +45,16 @@ func main() {
 	p.RegisterBookServiceServer(server, c.BookServiceServer{})
 	p.RegisterUserServiceServer(server, c.UserServiceServer{})
 
+	go serveStatic()
+
 	fmt.Println("gRPC server listen on port:", port)
 	if er := server.Serve(listen); er != nil {
-		print("error on grpc server:", err)
+		panic(fmt.Sprintln("error on grpc server:", err))
 	}
 }
 
 func ensureValidTokenUnary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	fmt.Println("RPC CALL:", info.FullMethod)
+	fmt.Println("RPC CALL UNARY:", info.FullMethod)
 	if strings.Contains(info.FullMethod, "Login") {
 		return handler(ctx, req)
 	}
@@ -70,7 +76,7 @@ func ensureValidTokenUnary(ctx context.Context, req interface{}, info *grpc.Unar
 }
 
 func ensureValidTokenStream(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-	fmt.Println("RPC CALL:", info.FullMethod)
+	fmt.Println("RPC CALL STREAM:", info.FullMethod)
 	if strings.Contains(info.FullMethod, "Login") {
 		return handler(srv, ss)
 	}
@@ -101,4 +107,22 @@ func valid(authorization []string) bool {
 	// here forgoes any of the usual OAuth2 token validation and instead checks
 	// for a token matching an arbitrary string.
 	return token == "auth-token"
+}
+
+func serveStatic() {
+	http.Handle("/",
+		http.StripPrefix("/",
+			middlewareLogStatic(http.FileServer(http.Dir("./static")))))
+
+	fmt.Println("static server serving on port:", 8081)
+	if err := http.ListenAndServe(":8081", nil); err != nil {
+		panic(fmt.Sprintln("Error serving static files"))
+	}
+}
+
+func middlewareLogStatic(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("STATIC CALL", r.Method, r.URL)
+		next.ServeHTTP(w, r)
+	})
 }
