@@ -18,8 +18,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    print("INIT");
-
     _bookService = BookServiceClient(Connection.channel);
     getBooks();
     super.initState();
@@ -27,7 +25,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("BUILD");
 
     return Scaffold(
       backgroundColor: MColor.scaffoldBackground,
@@ -35,12 +32,8 @@ class _HomePageState extends State<HomePage> {
         title: const Center(child: Text("Home Page")),
         automaticallyImplyLeading: false,
       ),
-      body: Stack(
-        children: [
-          Column(
-            children: wbooks,
-          )
-        ]
+      body: Row(
+        children: wbooks
       ),
     );
   }
@@ -48,16 +41,13 @@ class _HomePageState extends State<HomePage> {
   Future<void> getBooks() async {
     books = [];
     wbooks = [];
-    print("RPC CALL");
     Map<String, String> metadata = {}..addEntries([Authorization.getAuth]);
-    print(metadata);
     ResponseStream<Book> resp = _bookService.getAllBooks(
       GetAllBooksParams(),
       options: CallOptions(
         metadata: metadata,
       )
     );
-    print("RPC RESP");
     await for (final r in resp) {
       books.add(r);
       wbooks.add(_createBookWidget(r));
@@ -69,15 +59,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createBookWidget(Book book) {
-    print(book.coverUrl);
     return Container(
+      width: MediaQuery.of(context).size.width * 0.45,
       color: MColor.foregroundColor,
-      child: Row(
+      child: Column(
         children: [
           Text(book.title),
           Text(book.description),
-          Image.network("http://localhost:8081/${book.coverUrl}"),
-          Text(book.title),
+          Image.network("http://localhost:8081/${book.coverUrl}", width: 800, height: 200),
+          Text("${book.author.name} ${book.author.lastname}"),
         ],
       ),
     );
