@@ -32,8 +32,12 @@ class _HomePageState extends State<HomePage> {
         title: const Center(child: Text("Home Page")),
         automaticallyImplyLeading: false,
       ),
-      body: Row(
-        children: wbooks
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 384),
+        itemCount: wbooks.length,
+        itemBuilder: (context, index) {
+          return wbooks[index];
+        },
       ),
     );
   }
