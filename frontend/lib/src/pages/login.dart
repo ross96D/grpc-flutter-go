@@ -123,7 +123,13 @@ class _PageAuthState extends State<PageAuth> {
       Navigator.of(context).push(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
-          transitionsBuilder: Transitions.transition
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return DefaultTransition(
+              primaryAnimation: animation,
+              secondaryAnimation: secondaryAnimation,
+              child: child,
+            );
+          },
         )
       );
     }
@@ -133,7 +139,13 @@ class _PageAuthState extends State<PageAuth> {
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => const PageRegister(),
-        transitionsBuilder: Transitions.transition,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return DefaultTransition(
+            primaryAnimation: animation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          );
+        },
       )
     );
   }
