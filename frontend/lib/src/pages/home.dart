@@ -14,7 +14,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late BookServiceClient _bookService;
   List<Book> books = [];
-  List<Widget> wbooks = [];
 
   @override
   void initState() {
@@ -27,16 +26,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: MColor.scaffoldBackground,
       appBar: AppBar(
         title: const Center(child: Text("Home Page")),
         automaticallyImplyLeading: false,
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 384),
-        itemCount: wbooks.length,
-        itemBuilder: (context, index) {
-          return wbooks[index];
+        itemCount: books.length,
+        itemBuilder: (context, i) {
+          return _createBookWidget(books[i]);
         },
       ),
     );
@@ -44,7 +42,6 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getBooks() async {
     books = [];
-    wbooks = [];
     Map<String, String> metadata = {}..addEntries([Authorization.getAuth]);
     ResponseStream<Book> resp = _bookService.getAllBooks(
       GetAllBooksParams(),
@@ -54,25 +51,24 @@ class _HomePageState extends State<HomePage> {
     );
     await for (final r in resp) {
       books.add(r);
-      wbooks.add(_createBookWidget(r));
       setState(() {
         books = books;
-        wbooks = wbooks;
     });
     }
   }
 
   Widget _createBookWidget(Book book) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.45,
-      color: MColor.foregroundColor,
-      child: Column(
-        children: [
-          Text(book.title),
-          Text(book.description),
-          Image.network("http://localhost:8081/${book.coverUrl}", width: 800, height: 200),
-          Text("${book.author.name} ${book.author.lastname}"),
-        ],
+      child: Card(
+        child: Column(
+          children: [
+            Text(book.title),
+            Text(book.description),
+            Image.network("http://localhost:8081/${book.coverUrl}", width: 800, height: 200),
+            Text("${book.author.name} ${book.author.lastname}"),
+          ],
+        ),
       ),
     );
   }

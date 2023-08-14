@@ -29,7 +29,6 @@ class _PageAuthState extends State<PageAuth> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: MColor.scaffoldBackground,
         body: Stack(
           children: [
             Positioned(
